@@ -1,4 +1,6 @@
+## Wrapper library for the Web Serial class
 from std/asyncjs import Future
+import jsbuffers
 
 
 type
@@ -52,7 +54,7 @@ type
   
   ReadableStreamDefaultReaderChunk* {.importjs.} = ref object of JsRoot
     ## https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader/read#return_value
-    value*: seq[uint8]
+    value*: Uint8Array
     done*: bool
 
   WritableStreamDefaultWriter* {.importjs.} = ref object of JsRoot
@@ -187,7 +189,7 @@ func releaseLock*(self: WritableStreamDefaultWriter): Future[void] {.importjs: "
   ## in the same way from now on; otherwise, the writer will appear closed.
   ## https://developer.mozilla.org/en-US/docs/Web/API/WritableStreamDefaultWriter/releaseLock
 
-func write*(self: WritableStreamDefaultWriter, chunk: seq[uint8]): Future[void] {.importjs: "#.$1(new Uint8Array(@))".}
+func write*(self: WritableStreamDefaultWriter, chunk: Uint8Array): Future[void] {.importjs: "#.$1(@)".}
   ## The write() method of the WritableStreamDefaultWriter interface writes a passed chunk of data to a 
   ## WritableStream and its underlying sink, then returns a Promise that resolves to indicate the success or 
   ## failure of the write operation.
