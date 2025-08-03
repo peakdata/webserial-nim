@@ -1,5 +1,6 @@
 import std/asyncjs
 import ../src/webserial
+import ../src/jsbuffers
 
 proc sleep(ms: int): Future[void] {.async.} =
   # JavaScript setTimeout equivalent
@@ -29,14 +30,10 @@ proc main() {.async.} =
     # Get a writer for outgoing data
     let writer = port.writable.getWriter()
     
-    # Send a test message
-    let message = "Hello Serial Port!"
-    var bytes: seq[uint8]
-    for c in message:
-      bytes.add(c.uint8)
-    
-    await writer.write(bytes)
-    echo "Sent: ", bytes
+    # Send a test message using Uint8Array
+    let buffer = "Hello Serial!".toUint8Array()
+    await writer.write(buffer)
+    echo "Sent message:\t", $buffer
     
     # Wait 1 second before reading
     echo "Waiting 1 second before reading..."
@@ -45,7 +42,7 @@ proc main() {.async.} =
     # Read response (if any)
     let chunk = await reader.read()
     if not chunk.done:
-      echo "Received: ", chunk.value
+      echo "Received:\t\t", $chunk.value
     else:
       echo "No data received"
     

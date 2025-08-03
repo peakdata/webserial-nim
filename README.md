@@ -18,6 +18,8 @@ requires "webserial >= 0.1.0"
 
 ```nim
 import webserial
+import jsbuffers
+import std/sequtils
 
 # Request a serial port from the user
 let port = await serial.requestPort()
@@ -35,15 +37,20 @@ await port.open(SerialPortOpts(
 # Get a reader for the readable stream
 let reader = port.readable.getReader()
 
-# Read data
-let chunk = await reader.read()
-echo "Received: ", chunk.value
-
 # Get a writer for the writable stream
 let writer = port.writable.getWriter()
 
-# Write data
-await writer.write(@[65'u8, 66'u8, 67'u8]) # "ABC"
+# Send data using Uint8Array
+let buffer = "Hello, Serial Port!".toUint8Array()
+await writer.write(buffer)
+echo "Sent message:", $buffer
+
+# Read data
+let chunk = await reader.read()
+if not chunk.done:
+  echo "Received:", $chunk.value
+else:
+  echo "No data received"
 
 # Clean up
 await reader.releaseLock()
@@ -62,6 +69,12 @@ await port.close()
 - `WritableStream`: Stream for writing data
 - `ReadableStreamDefaultReader`: Reader for readable streams
 - `WritableStreamDefaultWriter`: Writer for writable streams
+
+### Buffer Types (from jsbuffers module)
+
+- `ArrayBuffer`: JavaScript ArrayBuffer for binary data
+- `DataView`: View for reading/writing binary data
+- `Uint8Array`: Typed array for 8-bit unsigned integers
 
 ### Global Variables
 
@@ -90,20 +103,32 @@ await port.close()
 
 #### Reader Methods
 
-- `read()`: Read the next chunk of data
+- `read()`: Read the next chunk of data (returns Uint8Array)
 - `releaseLock()`: Release the reader lock
 - `cancel(reason)`: Cancel the stream
 
 #### Writer Methods
 
-- `write(chunk)`: Write data to the stream
+- `write(chunk)`: Write Uint8Array data to the stream
 - `close()`: Close the stream
 - `releaseLock()`: Release the writer lock
 - `abort(reason)`: Abort the stream
 
+#### Buffer Methods
+
+- `newArrayBuffer(size)`: Create a new ArrayBuffer
+- `newDataView(buffer)`: Create a DataView from ArrayBuffer
+- `newUint8Array(buffer)`: Create an Uint8Array from ArrayBuffer
+- `toUint8Array(seq[uint8] | openArray[uint8])`: Convert sequence or array to Uint8Array
+- `toUint8Array(string)`: Convert string to Uint8Array
+- `$`(uint8Array): Convert Uint8Array to string representation
+- `setUint8(dataView, pos, value)`: Set a byte in DataView
+- `getUint8(dataView, pos)`: Get a byte from DataView
+- `byteLength`: Get the length of the buffer
+
 ## Browser Compatibility
 
-This wrapper requires a browser that supports the Web Serial API. Currently supported in:
+The Web Serial API is currently supported in:
 
 - Chrome/Chromium 89+
 - Edge 89+

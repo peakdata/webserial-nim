@@ -14,12 +14,25 @@ proc newArrayBuffer*(bytes: int): ArrayBuffer {.importjs: "new ArrayBuffer(@)".}
 proc newDataView*(buffer: ArrayBuffer): DataView {.importjs: "new DataView(@)".}
 ## https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView
 
-proc newUint8Array*(buffer: ArrayBuffer): Uint8Array {.importjs: "new Uint8Array(@)".}
-proc newUint8Array*(buffer: ArrayBuffer, byteOffset: int): Uint8Array {.importjs: "new Uint8Array(@)".}
-proc newUint8Array*(buffer: ArrayBuffer, byteOffset: int, length: int): Uint8Array {.importjs: "new Uint8Array(@)".}
 ## https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array#constructor
+proc newUint8Array*(length: int): Uint8Array {.importjs: "new Uint8Array(@)".}
+proc newUint8Array*(ab: ArrayBuffer): Uint8Array {.importjs: "new Uint8Array(@)".}
+proc newUint8Array*(ab: ArrayBuffer, byteOffset: int): Uint8Array {.importjs: "new Uint8Array(@)".}
+proc newUint8Array*(ab: ArrayBuffer, byteOffset: int, length: int): Uint8Array {.importjs: "new Uint8Array(@)".}
+## make Uint8Array indexable and stringable
+proc `[]`*(obj: Uint8Array, index: int): uint8 {.importjs: "#[@]".}
+proc `[]=`*(obj: Uint8Array, index: int, value: uint8) {.importjs: "#[#] = #".}
+proc `$`*(obj: Uint8Array): cstring {.importjs: "String(@)".}
+converter toUint8Array*(sq: seq[uint8] | openArray[uint8]): Uint8Array =
+  result = newUint8Array(sq.len)
+  for i, v in sq:
+    result[i] = v
+converter toUint8Array*(s: string): Uint8Array =
+  result = newUint8Array(s.len)
+  for i, v in s:
+    result[i] = v.uint8
 
-
+## Individual data view get/set procedures
 proc getBigInt64*(dataView: DataView, pos: int, littleEndian = false): int64 {.importjs: "#.$1(@)".}
 ## https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/getBigInt64
 proc getBigUint64*(dataView: DataView, pos: int, littleEndian = false): uint64 {.importjs: "#.$1(@)".}
