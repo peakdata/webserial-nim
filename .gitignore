@@ -1,3 +1,5 @@
+.nimble/
+.build/
 nimcache/
-nimblecache/
-htmldocs/
+config.nims
+nim.cfg

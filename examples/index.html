@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSerial Nim Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-height: 200px;
+            background-color: #f8f9fa;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSerial Nim Example</h1>
+    <p>This example demonstrates the WebSerial API using Nim.</p>
+    
+    <button onclick="startExample()">Start Serial Example</button>
+    
+    <div id="output"></div>
+
+    <script src="basic_usage.js"></script>
+    <script>
+        // Override console.log to display output in the page
+        const originalLog = console.log;
+        const outputDiv = document.getElementById('output');
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            outputDiv.textContent += args.join(' ') + '\n';
+        };
+        
+        function startExample() {
+            outputDiv.textContent = '';
+            console.log('Starting WebSerial example...');
+            startSerialExample();
+        }
+    </script>
+</body>
+</html> 
